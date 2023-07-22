@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { api } from "~/utils/api";
-import { SignIn, SignInButton,SignOutButton, useUser } from "@clerk/nextjs";
+import { SignInButton,SignOutButton, useUser } from "@clerk/nextjs";
 
 export default function Home() {
 
