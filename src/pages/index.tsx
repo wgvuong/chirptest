@@ -4,6 +4,7 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { LoadingSpinner, LoadingPage } from "~/components/loading"
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { toast } from "react-hot-toast";
 
 import { type NextPage } from "next";
 import Image from "next/image";
@@ -19,6 +20,14 @@ const CreatePostWizard = () => {
       setInput("");
       void ctx.posts.getAll.invalidate();
     },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if(errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]); // error handling when user attempts to post an invalid input (not an emoji)
+      } else {
+        toast.error("Failed to post! Please try again later.");
+      }
+    }
   });
   const [ input, setInput ] = useState<string>("");
   
@@ -35,13 +44,30 @@ const CreatePostWizard = () => {
         height={56}
       />
       <input 
-        placeholder="Type some emojis!"
+        placeholder="Type some emojis! (WIN ⊞ + .) "
         className="bg-transparent grow outline-none"
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if(e.key === "Enter") {
+            e.preventDefault();
+            if(input !== "") {
+              mutate({ content: input });
+            }
+          }
+        }}
         disabled={isPosting}
         />
-        <button onClick={() => mutate({ content: input })}>Post</button>
+        {input !== "" && !isPosting && (
+          <button onClick={() => mutate({ content: input })}>
+          Post
+          </button>
+        )}
+        {isPosting && (
+          <div className="flex justify-center items-center">
+            <LoadingSpinner size={30}/>
+          </div>
+        )}
     </div>
   );
 };
