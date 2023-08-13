@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast";
 import { type NextPage } from "next";
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
 
 dayjs.extend(relativeTime);
 
@@ -48,7 +49,7 @@ const CreatePostWizard = () => {
         className="bg-transparent grow outline-none"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
+        onKeyDown={(e) => { // allows for input to be posted when user presses enter key
           if(e.key === "Enter") {
             e.preventDefault();
             if(input !== "") {
@@ -85,11 +86,13 @@ const PostView = (props: PostWithUser) => {
         height={56}
       />
       <div className="flex flex-col"> 
-        <div className="flex text-slate-300">
-          <span>
-            {`@${author.username}`}
+        <div className="flex text-slate-300 gap 1">
+          <Link href={`/@${author.username}`}>
+            <span> {`@${author.username}`} </span>
+          </Link>
+          <Link href={`/post/${post.id}`}>
             <span className="font-thin">{` · ${dayjs(post.createdAt).fromNow()}`}</span>
-          </span>
+          </Link>
         </div>
         <span className="text-2xl">{post.content}</span>
       </div>
